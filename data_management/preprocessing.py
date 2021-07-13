@@ -1,3 +1,7 @@
+"""
+This file stores the functions responsible of textual data preprocessing
+such as stop words removal, lower casing, lemmatization etc..
+"""
 import os
 import re
 import pandas as pd
@@ -5,9 +9,18 @@ import stanza
 import nltk
 from data_management.utils import check_file_extension, check_preprocessed_file_exists
 
+PREPROCESSING_FILE_PATH = os.path.split(os.path.realpath(__file__))[0]
+
 
 def get_french_stop_words():
-    with open(os.path.join(os.getcwd(), "stop_words.txt"), "r", encoding="utf-8") as file:
+    """
+    This function will create a set of stop words based on nltk french resources and
+    custom information stored in the file stop_words.txt
+    :return: set of words
+    :rtype: set
+    """
+    with open(os.path.join(PREPROCESSING_FILE_PATH+'/..',
+                           "stop_words.txt"), "r", encoding="utf-8") as file:
         custom_stop_words = file.readlines()
     clean_words = []
     for word in custom_stop_words:
@@ -24,10 +37,10 @@ def f_base(string):
     :return: processed string - see comments in the source code for more info
     """
     string = string.lower()
-    string = re.sub(r'[0-9]+|%|[\+\*\\\/\_\#\$]+', '', string)
-    string = re.sub(r'[\]\[\(\)\=\>\<\?\.\;\,\!\"\:\»\«]+', ' ', string)
-    string = re.sub(r'[\-\'\’]+', ' ', string)
-    string = re.sub(r' [a-z]{1} | qu ', ' ', string)
+    string = re.sub(r'[0-9]+|%|[+*\\/_#$]+', '', string)
+    string = re.sub(r'[}{\]\[()= ><?.;,!":»«]+', ' ', string)
+    string = re.sub(r'[\-\'’`]+', ' ', string)
+    string = re.sub(r' [a-z] | qu ', ' ', string)
     string = re.sub(r' {2}', " ", string)
 
     return string.strip()
@@ -55,17 +68,30 @@ def preprocess_pipe_proposal(raw_text):
     nlp = stanza.Pipeline(lang='fr', processors='tokenize,lemma')
     doc = nlp(corpora)
 
-    lemmas = [lemma for lemma in doc.get("lemma")]
+    lemmas = list(doc.get('lemma'))
     lemmatized_proposals = " ".join(f_stopwords(lemmas))
     return lemmatized_proposals
 
 
 def get_clean_proposals(file_path, proposal_column_name="body"):
+    """
+    This function will either call the preprocessing pipe on all the proposals and a
+    preprocessed_proposals column in data. It then will be stored in the dist directory.
+    If the corpus has already been preprocessed it will load it instead to avoid
+    useless computation time.
+    :param file_path: path to the data to preprocess -> csv or xls data
+    :type file_path: str
+    :param proposal_column_name: name of the column storing the proposals
+    :type proposal_column_name: str
+    :return: updated dataframe with a new column storing the preprocessed data
+    """
+    # local config for pylint -> unwanted message on line 97 (delete the following
+    # line to access it)
+    # pylint: disable=unnecessary-lambda
     _, filename = check_file_extension(file_path)
 
     file_exists, preprocessed_file_path, filename = check_preprocessed_file_exists(file_path)
     if file_exists:
-        print("This file has already been preprocessed")
         dataframe = pd.read_csv(preprocessed_file_path, sep=";", encoding="utf-8")
     else:
         dataframe, filename = check_file_extension(file_path)
@@ -77,13 +103,22 @@ def get_clean_proposals(file_path, proposal_column_name="body"):
 
 
 def init_txt_file_from_table(file_path, proposal_column_name="body"):
+    """
+    Write a text file containing only the preprocessed proposals.
+    It is created from the dataframe structure initialized by the function
+    get_clean_proposals().
+    :param file_path: path to the data to preprocess -> csv or xls data
+    :type file_path: str
+    :param proposal_column_name: name of the column storing the proposals
+    :type proposal_column_name: str
+    """
     file_exists, preprocessed_file_path, filename = check_preprocessed_file_exists(file_path)
     if file_exists:
-        dataframe = pd.read_csv(preprocessed_file_path, sep=',', encoding="utf-8")
+        dataframe = pd.read_csv(preprocessed_file_path, sep=';', encoding="utf-8")
     else:
         dataframe = get_clean_proposals(file_path, proposal_column_name)
     body = dataframe["preprocessed_proposals"].to_list()
-    with open(os.path.join(os.getcwd(), "dist/{}.txt".format(filename)),
+    with open(os.path.join(os.getcwd(), "dist/{}_preprocessed.txt".format(filename)),
               "w", encoding="utf-8") as file:
         for prop in body:
             file.writelines(prop+'\n')
