@@ -19,3 +19,18 @@ push:
 	@make build
 	docker tag $(IMAGE_NAME) $(USERNAME)/$(REPO_NAME):$(VERSION)
 	docker push $(TAG)
+
+test:
+	pytest tests --cov=. --cov-fail-under=90
+
+lint:
+	pylint ./**/*.py
+
+dep:
+	pip install pylint
+	pip install -r requirements.txt
+
+dep3:
+	pip3 install pylint
+	pip3 install -r requirements.txt
+
