@@ -129,3 +129,4 @@ dmypy.json
 
 dist/subset_raw_data_preprocessed.csv
 dist/word_frequency.json
+dist/*.txt
