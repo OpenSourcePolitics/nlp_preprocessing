@@ -3,8 +3,8 @@ This file will be used to compute statistical indicators on text data
 """
 import os
 from collections import defaultdict
-import nltk
 import json
+import nltk
 from data_management.preprocessing import get_clean_proposals
 from data_management.utils import check_category_exists
 
@@ -18,6 +18,10 @@ def freq_stats_corpora(file_path):
     :return: {label: tokenized proposals}
     :rtype: dict
     """
+    # local config for pylint -> unwanted message on line 29-30 (delete the following
+    # line to access it)
+    # pylint: disable=no-member
+    # pylint: disable=unsubscriptable-object
     dataframe = get_clean_proposals(file_path)
     dataframe = check_category_exists(dataframe)
     tokenizer = nltk.RegexpTokenizer(r'\w+')
@@ -49,7 +53,8 @@ def voc_unique(file_path):
     for keys, values in corpora.items():
         freq[keys] = nltk.FreqDist(values)
         fq_total += freq[keys]
-    with open(os.path.join(os.getcwd(), "dist/word_frequency.json"), "w", encoding="utf-8") as json_file:
+    with open(os.path.join(os.getcwd(), "dist/word_frequency.json"),
+              "w", encoding="utf-8") as json_file:
         json.dump(fq_total, json_file, ensure_ascii=False)
     return fq_total, corpora
 
@@ -59,7 +64,8 @@ def get_most_common_words(file_path, number_of_words=50):
     This function will return the most common words
     :param file_path: path to the initial data
     :param number_of_words: number of most common words
-    :return:
+    :return: list of most common words in the corpus
+    :rtype: list
     """
     fq_total, _ = voc_unique(file_path)
     most_commons = list(fq_total.most_common(number_of_words))
