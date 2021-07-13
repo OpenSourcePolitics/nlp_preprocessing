@@ -4,6 +4,8 @@ Tool function used across the module
 import os
 import pandas as pd
 
+UTILS_PATH = os.path.split(os.path.realpath(__file__))[0]
+
 
 def check_file_extension(file_path):
     """
@@ -27,7 +29,7 @@ def check_preprocessed_file_exists(file_path):
     :rtype: tuple
     """
     filename, _ = os.path.splitext(os.path.split(file_path)[1])
-    preprocessed_file_path = os.path.join(os.getcwd(), "dist/{}_preprocessed.csv".format(filename))
+    preprocessed_file_path = os.path.join(UTILS_PATH+'/..', "dist/{}_preprocessed.csv".format(filename))
     file_exists = os.path.isfile(preprocessed_file_path)
     return file_exists, preprocessed_file_path, filename
 
@@ -36,7 +38,7 @@ def check_category_exists(dataframe):
     """
     This function will check if a column "category" exists in the initial dataframe.
     If the data is not categorized then it will create a false category for statistical computation purposes
-    :return:
+    :return: dataframe updated if it did not have a column category
     """
     if "category" in dataframe.columns:
         pass
