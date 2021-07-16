@@ -31,4 +31,5 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Test with Pytest
         run: |
+          python resources_installation.py
           pytest tests --cov=. --cov-fail-under=90 --cov-report term-missing
