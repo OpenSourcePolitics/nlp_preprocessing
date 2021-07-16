@@ -5,16 +5,18 @@ import os
 from collections import defaultdict
 import json
 import nltk
-from data_management.preprocessing import get_clean_proposals
 from data_management.utils import check_category_exists
 
+STATS_PATH = os.path.split(os.path.realpath(__file__))[0]
 
-def freq_stats_corpora(file_path):
+
+def freq_stats_corpora(dataframe, preprocessed=True):
     """
     This function returns the corpus as a dictionary where the keys are the different categories
     and the values are the proposals
-    :param file_path: path to the initial data
-    :type file_path: str
+    :param dataframe: dataframe object
+    :param filename:
+    :param preprocessed:
     :return: {label: tokenized proposals}
     :rtype: dict
     """
@@ -22,12 +24,14 @@ def freq_stats_corpora(file_path):
     # line to access it)
     # pylint: disable=no-member
     # pylint: disable=unsubscriptable-object
-    dataframe = get_clean_proposals(file_path)
     dataframe = check_category_exists(dataframe)
-    tokenizer = nltk.RegexpTokenizer(r'\w+')
-    corpora = defaultdict(list)
     df_dict = dataframe.to_dict()
-    proposals_as_dict = dataframe['preprocessed_proposals'].to_dict()
+    if preprocessed:
+        proposals_as_dict = dataframe['preprocessed_proposals'].to_dict()
+    else:
+        proposals_as_dict = dataframe["body"].to_dict()
+    tokenizer = nltk.RegexpTokenizer(r'\!|\w+')
+    corpora = defaultdict(list)
     categories = df_dict["category"]
     cpt = 0
     for _, category in categories.items():
@@ -38,35 +42,46 @@ def freq_stats_corpora(file_path):
     return corpora
 
 
-def voc_unique(file_path):
+def voc_unique(dataframe, filename, preprocessed):
     """
     This function will count the number of different words by category
-    :param file_path: path to the csv file to study
-    :type file_path: str
+    :param dataframe:
+    :param filename:
+    :param preprocessed:
     :return: dictionary (freq), dictionary (stats), dictionary (corpus)
-    :rtype: tuple
+    :rtype: collections.Counter
     """
-    corpora = freq_stats_corpora(file_path)
+    corpora = freq_stats_corpora(dataframe, preprocessed)
     freq = dict()
     fq_total = nltk.Counter()
 
     for keys, values in corpora.items():
         freq[keys] = nltk.FreqDist(values)
         fq_total += freq[keys]
-    with open(os.path.join(os.getcwd(), "dist/word_frequency.json"),
-              "w", encoding="utf-8") as json_file:
-        json.dump(fq_total, json_file, ensure_ascii=False)
-    return fq_total, corpora
+    if preprocessed:
+        with open(os.path.join(STATS_PATH+'/..', "dist/word_frequency_{}_preprocessed.json".format(filename)),
+                  "w", encoding="utf-8") as json_file:
+            json.dump(fq_total, json_file, ensure_ascii=False)
+    else:
+        with open(os.path.join(STATS_PATH+'/..', "dist/word_frequency_{}.json".format(filename)),
+                  "w", encoding="utf-8") as json_file:
+            json.dump(fq_total, json_file, ensure_ascii=False)
+    return fq_total
 
 
-def get_most_common_words(file_path, number_of_words=50):
+def get_most_common_words(dataframe, filename, preprocessed, number_of_words=50):
     """
     This function will return the most common words
-    :param file_path: path to the initial data
+    :param dataframe: dataframe object storing the data
+    :param filename: name of the file -> used to create the resources
+    :type filename: str
+    :param preprocessed: boolean value that indicates if you're working on a file
+    that has been preprocessed
+    :type preprocessed: bool
     :param number_of_words: number of most common words
     :return: list of most common words in the corpus
     :rtype: list
     """
-    fq_total, _ = voc_unique(file_path)
+    fq_total = voc_unique(dataframe, filename, preprocessed)
     most_commons = list(fq_total.most_common(number_of_words))
     return most_commons

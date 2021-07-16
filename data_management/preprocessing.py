@@ -7,7 +7,7 @@ import re
 import pandas as pd
 import stanza
 import nltk
-from data_management.utils import check_file_extension, check_preprocessed_file_exists
+from data_management.utils import load_data, check_preprocessed_file_exists
 
 PREPROCESSING_FILE_PATH = os.path.split(os.path.realpath(__file__))[0]
 
@@ -88,18 +88,17 @@ def get_clean_proposals(file_path, proposal_column_name="body"):
     # local config for pylint -> unwanted message on line 97 (delete the following
     # line to access it)
     # pylint: disable=unnecessary-lambda
-    _, filename = check_file_extension(file_path)
 
     file_exists, preprocessed_file_path, filename = check_preprocessed_file_exists(file_path)
     if file_exists:
         dataframe = pd.read_csv(preprocessed_file_path, sep=";", encoding="utf-8")
     else:
-        dataframe, filename = check_file_extension(file_path)
+        dataframe, filename = load_data(file_path)
         clean_proposals = dataframe[proposal_column_name].apply(lambda x: preprocess_pipe_proposal(x))
         dataframe["preprocessed_proposals"] = clean_proposals
         dataframe.to_csv(os.path.join(os.getcwd(), "dist/{}_preprocessed.csv".format(filename)),
                          sep=";", encoding="utf-8")
-    return dataframe
+    return dataframe, filename
 
 
 def init_txt_file_from_table(file_path, proposal_column_name="body"):
@@ -116,7 +115,7 @@ def init_txt_file_from_table(file_path, proposal_column_name="body"):
     if file_exists:
         dataframe = pd.read_csv(preprocessed_file_path, sep=';', encoding="utf-8")
     else:
-        dataframe = get_clean_proposals(file_path, proposal_column_name)
+        dataframe, _ = get_clean_proposals(file_path, proposal_column_name)
     body = dataframe["preprocessed_proposals"].to_list()
     with open(os.path.join(os.getcwd(), "dist/{}_preprocessed.txt".format(filename)),
               "w", encoding="utf-8") as file:

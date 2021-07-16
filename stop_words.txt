@@ -46,6 +46,7 @@ bien
 bigre
 bon
 bonnes
+bonjour
 boum
 bravo
 brrr
@@ -525,3 +526,4 @@ zut
 été
 être
 ô
+svp
