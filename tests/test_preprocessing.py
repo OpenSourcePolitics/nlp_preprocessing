@@ -64,6 +64,7 @@ def check_word_removal(list_of_words):
             validation.append(False)
     return all(validation)
 
+
 def test_stop_words():
     """
     This function is used to test the type of the get_french_stop_words() output
@@ -110,9 +111,11 @@ def test_preprocessing(file_path, flag_clean_directory):
     """
     if flag_clean_directory is not None:
         clean_dist_directory()
-    dataframe = get_clean_proposals(file_path)
+    dataframe, filename = get_clean_proposals(file_path)
     preprocessed_sentences = dataframe["preprocessed_proposals"].to_list()
-    assert "preprocessed_proposals" in list(dataframe.columns) and len(preprocessed_sentences) != 0
+    assert "preprocessed_proposals" in list(dataframe.columns) \
+           and len(preprocessed_sentences) != 0 \
+           and isinstance(filename, str)
 
 
 @pytest.mark.parametrize("file_path, flag_clean_directory", VAR_1)
