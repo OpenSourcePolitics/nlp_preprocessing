@@ -127,6 +127,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-dist/subset_raw_data_preprocessed.csv
-dist/word_frequency.json
+dist/*.csv
+dist/*.json
 dist/*.txt
