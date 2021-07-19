@@ -17,13 +17,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - uses: actions/checkout@v2
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-      name: Build & Push Image
+      - name: Build & Push Image
         run: |
           docker build -t $(IMAGE_NAME) . --compress
           docker tag $(IMAGE_NAME) $(USERNAME)/$(REPO_NAME):$(VERSION)
