@@ -1,0 +1,29 @@
+name: "[CD] Push Image to Docker Hub"
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+    branches-ignore:
+      - "chore"
+
+env:
+  PYTHON_VERSION: 3.8
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      name: Build & Push Image
+        run: |
+          docker tag $(IMAGE_NAME) $(USERNAME)/$(REPO_NAME):$(VERSION)
+          docker push $(TAG)
