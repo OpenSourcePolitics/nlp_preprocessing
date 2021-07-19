@@ -42,7 +42,7 @@ def freq_stats_corpora(dataframe, preprocessed=True):
     return corpora
 
 
-def voc_unique(dataframe, filename, preprocessed):
+def voc_unique_by_category(dataframe, filename=None, preprocessed=True):
     """
     This function will count the number of different words by category
     :param dataframe:
@@ -51,37 +51,18 @@ def voc_unique(dataframe, filename, preprocessed):
     :return: dictionary (freq), dictionary (stats), dictionary (corpus)
     :rtype: collections.Counter
     """
+    if filename is None:
+        filename = ""
     corpora = freq_stats_corpora(dataframe, preprocessed)
-    freq = dict()
-    fq_total = nltk.Counter()
-
+    word_frequency_by_category = dict()
     for keys, values in corpora.items():
-        freq[keys] = nltk.FreqDist(values)
-        fq_total += freq[keys]
+        word_frequency_by_category[keys] = dict(nltk.FreqDist(values))
     if preprocessed:
         with open(os.path.join(STATS_PATH+'/..', "dist/word_frequency_{}_preprocessed.json".format(filename)),
                   "w", encoding="utf-8") as json_file:
-            json.dump(fq_total, json_file, ensure_ascii=False)
+            json.dump(word_frequency_by_category, json_file, ensure_ascii=False)
     else:
         with open(os.path.join(STATS_PATH+'/..', "dist/word_frequency_{}.json".format(filename)),
                   "w", encoding="utf-8") as json_file:
-            json.dump(fq_total, json_file, ensure_ascii=False)
-    return fq_total
-
-
-def get_most_common_words(dataframe, filename, preprocessed, number_of_words=50):
-    """
-    This function will return the most common words
-    :param dataframe: dataframe object storing the data
-    :param filename: name of the file -> used to create the resources
-    :type filename: str
-    :param preprocessed: boolean value that indicates if you're working on a file
-    that has been preprocessed
-    :type preprocessed: bool
-    :param number_of_words: number of most common words
-    :return: list of most common words in the corpus
-    :rtype: list
-    """
-    fq_total = voc_unique(dataframe, filename, preprocessed)
-    most_commons = list(fq_total.most_common(number_of_words))
-    return most_commons
+            json.dump(word_frequency_by_category, json_file, ensure_ascii=False)
+    return word_frequency_by_category
