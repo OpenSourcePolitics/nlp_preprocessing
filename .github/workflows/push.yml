@@ -20,6 +20,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build & Push Image
         run: |
-          docker build -t ${IMAGE_NAME} . --compress
-          docker tag ${IMAGE_NAME} ${USERNAME}/${REPO_NAME}:${VERSION}
-          docker push ${TAG}
+          docker build -t ${{ secrets.IMAGE_NAME }} . --compress
+          docker tag ${{ secrets.IMAGE_NAME }} ${{ secrets.USERNAME }}/${{ secrets.REPO_NAME }}:${{ secrets.VERSION }}
+          docker push ${{ secrets.TAG }}
