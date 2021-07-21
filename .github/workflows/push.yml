@@ -21,5 +21,5 @@ jobs:
       - name: Build & Push Image
         run: |
           docker build -t ${{ secrets.IMAGE_NAME }} . --compress
-          docker tag ${{ secrets.IMAGE_NAME }} ${{ secrets.USERNAME }}/${{ secrets.REPO_NAME }}:${{ secrets.VERSION }}
+          docker tag ${{ secrets.IMAGE_NAME }} ${{ secrets.USERNAME }}/${{ secrets.REPOSITORY_NAME }}:${{ secrets.VERSION }}
           docker push ${{ secrets.TAG }}
