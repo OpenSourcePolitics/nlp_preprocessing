@@ -1,7 +1,7 @@
 PWD=$(shell pwd)
 USERNAME := quentinlp
 IMAGE_NAME := nlp-preprocessing
-REPO_NAME := nlp-repo
+REPO_NAME := nlp_repo_public_test
 VERSION := latest
 TAG := $(USERNAME)/$(REPO_NAME):$(VERSION)
 
@@ -12,7 +12,8 @@ build:
 	docker build -t $(IMAGE_NAME) . --compress
 	docker run --rm -dit --name nlp-preprocessing nlp-preprocessing /bin/bash
 	docker cp nlp-preprocessing:/dist/subset_raw_data_preprocessed.csv $(PWD)/dist/subset_raw_data_preprocessed.csv
-	docker cp nlp-preprocessing:/dist/word_frequency.json $(PWD)/dist/word_frequency.json
+	docker cp nlp-preprocessing:/dist/word_frequency_subset_raw_data_preprocessed.json $(PWD)/dist/word_frequency_subset_raw_data_preprocessed.json
+	docker cp nlp-preprocessing:/dist/word_frequency_subset_raw_data.json $(PWD)/dist/word_frequency_subset_raw_data.json
 	docker stop nlp-preprocessing
 
 push:
