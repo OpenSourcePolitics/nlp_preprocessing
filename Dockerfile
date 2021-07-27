@@ -14,15 +14,13 @@ COPY ./stop_words.txt ./
 
 RUN python resources_installation.py
 
-RUN python -m nltk.downloader stopwords
-
 RUN mkdir ./dist
 
 COPY ./data_management ./data_management
 
 COPY ./data ./data
 
-RUN python ./main.py
+RUN python ./main.py -f "/nlp_preprocessing/data/subset_raw_data.csv"
 
 FROM python:3.8
 
