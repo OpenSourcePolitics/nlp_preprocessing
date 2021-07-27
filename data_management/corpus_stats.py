@@ -42,27 +42,24 @@ def freq_stats_corpora(dataframe, preprocessed=True):
     return corpora
 
 
-def voc_unique_by_category(dataframe, filename=None, preprocessed=True):
+def voc_unique_by_category(dataframe, preprocessed=True):
     """
     This function will count the number of different words by category
     :param dataframe:
-    :param filename:
     :param preprocessed:
     :return: dictionary (freq), dictionary (stats), dictionary (corpus)
     :rtype: collections.Counter
     """
-    if filename is None:
-        filename = ""
     corpora = freq_stats_corpora(dataframe, preprocessed)
     word_frequency_by_category = dict()
     for keys, values in corpora.items():
         word_frequency_by_category[keys] = dict(nltk.FreqDist(values))
     if preprocessed:
-        with open(os.path.join(STATS_PATH+'/..', "dist/word_frequency_{}_preprocessed.json".format(filename)),
+        with open(os.path.join(STATS_PATH+'/..', "dist/word_frequency_preprocessed.json"),
                   "w", encoding="utf-8") as json_file:
             json.dump(word_frequency_by_category, json_file, ensure_ascii=False)
     else:
-        with open(os.path.join(STATS_PATH+'/..', "dist/word_frequency_{}.json".format(filename)),
+        with open(os.path.join(STATS_PATH+'/..', "dist/word_frequency.json"),
                   "w", encoding="utf-8") as json_file:
             json.dump(word_frequency_by_category, json_file, ensure_ascii=False)
     return word_frequency_by_category
