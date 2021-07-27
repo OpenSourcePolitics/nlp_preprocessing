@@ -26,9 +26,9 @@ def test_corpora(file_path, preprocessed):
     :type preprocessed: bool
     """
     if preprocessed:
-        dataframe, _ = get_clean_proposals(file_path)
+        dataframe = get_clean_proposals(file_path)
     else:
-        dataframe, _ = load_data(file_path)
+        dataframe = load_data(file_path)
     categories_df = list(dataframe.category.unique())
     corpora = freq_stats_corpora(dataframe, preprocessed)
     assert isinstance(corpora, collections.defaultdict)\
@@ -46,9 +46,9 @@ def test_voc_uniqueness(file_path, preprocessed):
     :type preprocessed: bool
     """
     if preprocessed:
-        dataframe, filename = get_clean_proposals(file_path)
+        dataframe = get_clean_proposals(file_path)
     else:
-        dataframe, filename = load_data(file_path)
-    word_frequency = voc_unique_by_category(dataframe, filename, preprocessed)
+        dataframe = load_data(file_path)
+    word_frequency = voc_unique_by_category(dataframe, preprocessed)
     assert len(word_frequency.keys()) == len(set(word_frequency.keys()))\
            and isinstance(word_frequency, dict)
