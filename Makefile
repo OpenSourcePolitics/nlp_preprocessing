@@ -11,9 +11,7 @@ local-installation:
 build:
 	docker build -t $(IMAGE_NAME) . --compress
 	docker run --rm -dit --name nlp-preprocessing nlp-preprocessing /bin/bash
-	docker cp nlp-preprocessing:/dist/subset_raw_data_preprocessed.csv $(PWD)/dist/subset_raw_data_preprocessed.csv
-	docker cp nlp-preprocessing:/dist/word_frequency_subset_raw_data_preprocessed.json $(PWD)/dist/word_frequency_subset_raw_data_preprocessed.json
-	docker cp nlp-preprocessing:/dist/word_frequency_subset_raw_data.json $(PWD)/dist/word_frequency_subset_raw_data.json
+	docker cp nlp-preprocessing:/dist/nlp_preprocessing_output.json $(PWD)/dist/nlp_preprocessing_output.json
 	docker stop nlp-preprocessing
 
 push:
@@ -22,7 +20,7 @@ push:
 	docker push $(TAG)
 
 test:
-	pytest tests --cov=. --cov-fail-under=90
+	pytest tests --cov=. --cov-fail-under=90 --cov-report term-missing
 
 lint:
 	pylint ./**/*.py
