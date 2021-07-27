@@ -2,15 +2,19 @@
 Integration test file
 """
 import os
-
+import pytest
 TEST_PATH_INTEGRATION = os.path.split(os.path.realpath(__file__))[0]
 
+TEST_FILES = [os.path.join(TEST_PATH_INTEGRATION, "../data/subset_raw_data.csv"),
+              os.path.join(TEST_PATH_INTEGRATION, "../data/subset_FEAMP.xls")]
 
-def test_main():
+
+@pytest.mark.parametrize("file_path", TEST_FILES)
+def test_main(file_path):
     """
     This function will test the main and assert that the execution went well
     """
-    result = os.system("python {}/main.py".format(TEST_PATH_INTEGRATION + "/.."))
+    result = os.system("python {}/main.py -f {}".format(TEST_PATH_INTEGRATION + "/..", file_path))
     assert result == 0
 
 
