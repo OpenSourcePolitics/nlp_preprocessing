@@ -4,6 +4,7 @@ such as stop words removal, lower casing, lemmatization etc..
 """
 import os
 import re
+import json
 import pandas as pd
 import stanza
 import nltk
@@ -89,16 +90,19 @@ def get_clean_proposals(file_path, proposal_column_name="body"):
     # line to access it)
     # pylint: disable=unnecessary-lambda
 
-    file_exists, preprocessed_file_path, filename = check_preprocessed_file_exists(file_path)
+    file_exists, preprocessed_file_path, _ = check_preprocessed_file_exists(file_path)
     if file_exists:
-        dataframe = pd.read_csv(preprocessed_file_path, sep=";", encoding="utf-8")
+        dataframe = pd.read_json(preprocessed_file_path, orient="index")
     else:
-        dataframe, filename = load_data(file_path)
+        dataframe = load_data(file_path)
         clean_proposals = dataframe[proposal_column_name].apply(lambda x: preprocess_pipe_proposal(x))
         dataframe["preprocessed_proposals"] = clean_proposals
-        dataframe.to_csv(os.path.join(os.getcwd(), "dist/{}_preprocessed.csv".format(filename)),
-                         sep=";", encoding="utf-8")
-    return dataframe, filename
+
+    json_object = dataframe.to_json(orient="index")
+    parsed_object = json.loads(json_object)
+    with open(os.path.join(PREPROCESSING_FILE_PATH, "../dist/preprocessed_data.json"), "w", encoding="utf-8") as file:
+        json.dump(parsed_object, file, ensure_ascii=False, indent=4)
+    return dataframe
 
 
 def init_txt_file_from_table(file_path, proposal_column_name="body"):
@@ -113,11 +117,11 @@ def init_txt_file_from_table(file_path, proposal_column_name="body"):
     """
     file_exists, preprocessed_file_path, filename = check_preprocessed_file_exists(file_path)
     if file_exists:
-        dataframe = pd.read_csv(preprocessed_file_path, sep=';', encoding="utf-8")
+        dataframe = pd.read_json(preprocessed_file_path, orient="index")
     else:
-        dataframe, _ = get_clean_proposals(file_path, proposal_column_name)
+        dataframe = get_clean_proposals(file_path, proposal_column_name)
     body = dataframe["preprocessed_proposals"].to_list()
-    with open(os.path.join(os.getcwd(), "dist/{}_preprocessed.txt".format(filename)),
+    with open(os.path.join(PREPROCESSING_FILE_PATH, "../dist/{}_preprocessed.txt".format(filename)),
               "w", encoding="utf-8") as file:
         for prop in body:
             file.writelines(prop+'\n')
