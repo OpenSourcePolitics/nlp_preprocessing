@@ -98,7 +98,7 @@ def merge_json_objects(file_path):
     merged_dict = {
         filename: preprocessed_data,
         "word_frequency_preprocessed": word_frequency_preprocessed,
-        "simple_word_frequency": word_frequency_data
+        "word_frequency": word_frequency_data
     }
     with open(os.path.join(UTILS_PATH, "../dist/nlp_preprocessing_output.json"), "w", encoding="utf-8") as file:
         json.dump(merged_dict, file, ensure_ascii=False, indent=4)
