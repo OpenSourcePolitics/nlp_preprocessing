@@ -4,26 +4,25 @@ File to be run
 import os
 import json
 import argparse
-from data_management.utils import load_data, merge_json_objects, clean_dist_directory
+from data_management.utils import merge_json_objects, clean_dist_directory
 from data_management.preprocessing import get_clean_proposals
 from data_management.corpus_stats import voc_unique_by_category
+from data_management.preprocessing_data_overlay import LocalPreprocessingDataLoader, \
+    ApiPreprocessingDataLoader, InputCorpus
 
 MAIN_PATH = os.path.split(os.path.realpath(__file__))[0]
 
 
-def init_preprocessed_data_tmp_files(file_path):
+def init_preprocessed_data_tmp_files(corpus: InputCorpus):
     """
     This function will call the main function of preprocessing.py and
     corpus_stats.py in order to initialize the tmp json objects that will
     be required by the other analysis projects
-    :param file_path: path to the file storing the data to be preprocessed
-    :type file_path: str
     """
     clean_dist_directory(os.path.join(MAIN_PATH + "dist/*"))
-    preprocessed_dataframe = get_clean_proposals(file_path)
-    initial_data = load_data(file_path)
-    voc_unique_by_category(preprocessed_dataframe, preprocessed=True)
-    voc_unique_by_category(initial_data, preprocessed=False)
+    preprocessed_dataframe = get_clean_proposals(corpus)
+    voc_unique_by_category(preprocessed_dataframe, isPreprocessed=True)
+    voc_unique_by_category(corpus.data, isPreprocessed=False)
 
 
 def parse_cli_arguments():
@@ -43,30 +42,23 @@ def parse_cli_arguments():
     return parser.parse_args()
 
 
-def nlp_preprocessing_workflow(file_path):
+def get_nlp_preprocessing_from_file(file_path: str):
     """
-    Main function that will call the the function responsible of the tmp
-    files creation and then call the function responsible of their merge into the
-    file that will be exposed with the API. Also checks if the file has already been preprocessed
-    and
-    :param file_path: path to the file storing the data to be preprocessed
-    :type file_path: str
+    Main function for local execution from file. It will initialize the
+    preprocessing functions and merge all the data into a single file
+    called nlp_preprocessing_output.json
     """
-    filename = os.path.basename(os.path.normpath(os.path.splitext(file_path)[0]))
-    if os.path.isfile(os.path.join(MAIN_PATH, "dist/nlp_preprocessing_output.json")):
-        with open(os.path.join(MAIN_PATH, "dist/nlp_preprocessing_output.json"),
-                  "r", encoding="utf-8") as final_file:
-            data = json.load(final_file)
-        if filename == list(data.keys())[0]:
-            print("file already preprocessed")
-        else:
-            init_preprocessed_data_tmp_files(file_path)
-            merge_json_objects(file_path)
-    else:
-        init_preprocessed_data_tmp_files(file_path)
-        merge_json_objects(file_path)
+    corpus = LocalPreprocessingDataLoader(file_path).load()
+    init_preprocessed_data_tmp_files(corpus)
+    merge_json_objects(corpus)
+
+
+def get_nlp_preprocessing_from_api(post_request_data, filename: str):
+    corpus = ApiPreprocessingDataLoader(filename=filename, post_request_data=post_request_data).load()
+    init_preprocessed_data_tmp_files(corpus)
+    merge_json_objects(corpus)
 
 
 if __name__ == '__main__':
     ARGS = parse_cli_arguments()
-    nlp_preprocessing_workflow(ARGS.file_path)
+    get_nlp_preprocessing_from_file(ARGS.file_path)
