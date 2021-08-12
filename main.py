@@ -21,8 +21,8 @@ def init_preprocessed_data_tmp_files(corpus: InputCorpus):
     """
     clean_dist_directory(os.path.join(MAIN_PATH + "dist/*"))
     preprocessed_dataframe = get_clean_proposals(corpus)
-    voc_unique_by_category(preprocessed_dataframe, isPreprocessed=True)
-    voc_unique_by_category(corpus.data, isPreprocessed=False)
+    voc_unique_by_category(preprocessed_dataframe, is_preprocessed=True)
+    voc_unique_by_category(corpus.data, is_preprocessed=False)
 
 
 def parse_cli_arguments():
