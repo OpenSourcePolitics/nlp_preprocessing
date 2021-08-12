@@ -4,26 +4,9 @@ Tool function used across the module
 import os
 import json
 import glob
-import pandas as pd
+from data_management.preprocessing_data_overlay import InputCorpus
 
 UTILS_PATH = os.path.split(os.path.realpath(__file__))[0]
-
-
-def check_file_extension(file_path):
-    """
-    This function test the file extension and use
-    the adequate method to load the data.
-    :param file_path:path to the data
-    :type file_path: str
-    :return: dataframe, filename
-    :rtype: tuple
-    """
-    _, file_extension = os.path.splitext(file_path)
-    if file_extension == ".xls":
-        dataframe = pd.read_excel(file_path)
-    elif file_extension == ".csv":
-        dataframe = pd.read_csv(file_path, sep=",", encoding="utf-8")
-    return dataframe
 
 
 def check_preprocessed_file_exists(file_path):
@@ -54,19 +37,6 @@ def check_category_exists(dataframe):
     return dataframe
 
 
-def load_data(file_path):
-    """
-    This functions is used to load the data which will be preprocessed. It deals
-    with csv and xls and will create a category if there is none
-    :param file_path: path to the data
-    :return: dataframe, filename
-    :rytpe: tuple
-    """
-    dataframe = check_file_extension(file_path)
-    dataframe = check_category_exists(dataframe)
-    return dataframe
-
-
 def clean_dist_directory(repository_path):
     """
     This function will clean the ./dist directory by deleting all
@@ -78,14 +48,11 @@ def clean_dist_directory(repository_path):
         os.remove(file)
 
 
-def merge_json_objects(file_path):
+def merge_json_objects(corpus: InputCorpus):
     """
     This function will be used to merge the temporary json outputs (word frequency, preprocessed
     data etc.) and aggregate them into a single json object.
-    :param file_path: path to the initial data to be preprocessed
-    :type file_path: str
     """
-    filename = os.path.basename(os.path.normpath(os.path.splitext(file_path)[0]))
     with open(os.path.join(UTILS_PATH, "../dist/preprocessed_data.json"),
               "r", encoding="utf-8") as preprocessed_data_file:
         preprocessed_data = json.load(preprocessed_data_file)
@@ -96,7 +63,7 @@ def merge_json_objects(file_path):
               "r", encoding="utf-8") as wf_preprocessed_file:
         word_frequency_preprocessed = json.load(wf_preprocessed_file)
     merged_dict = {
-        filename: preprocessed_data,
+        corpus.filename: preprocessed_data,
         "word_frequency_preprocessed": word_frequency_preprocessed,
         "word_frequency": word_frequency_data
     }

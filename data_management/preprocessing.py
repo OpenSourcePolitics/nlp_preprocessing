@@ -5,10 +5,11 @@ such as stop words removal, lower casing, lemmatization etc..
 import os
 import re
 import json
-import pandas as pd
+import pandas
 import stanza
 import nltk
-from data_management.utils import load_data, check_preprocessed_file_exists
+from data_management.preprocessing_data_overlay import InputCorpus
+
 
 PREPROCESSING_FILE_PATH = os.path.split(os.path.realpath(__file__))[0]
 
@@ -74,54 +75,23 @@ def preprocess_pipe_proposal(raw_text):
     return lemmatized_proposals
 
 
-def get_clean_proposals(file_path, proposal_column_name="body"):
+def get_clean_proposals(corpus: InputCorpus) -> pandas.DataFrame:
     """
     This function will either call the preprocessing pipe on all the proposals and a
     preprocessed_proposals column in data. It then will be stored in the dist directory.
     If the corpus has already been preprocessed it will load it instead to avoid
     useless computation time.
-    :param file_path: path to the data to preprocess -> csv or xls data
-    :type file_path: str
-    :param proposal_column_name: name of the column storing the proposals
-    :type proposal_column_name: str
     :return: updated dataframe with a new column storing the preprocessed data
     """
     # local config for pylint -> unwanted message on line 97 (delete the following
     # line to access it)
     # pylint: disable=unnecessary-lambda
-
-    file_exists, preprocessed_file_path, _ = check_preprocessed_file_exists(file_path)
-    if file_exists:
-        dataframe = pd.read_json(preprocessed_file_path, orient="index")
-    else:
-        dataframe = load_data(file_path)
-        clean_proposals = dataframe[proposal_column_name].apply(lambda x: preprocess_pipe_proposal(x))
-        dataframe["preprocessed_proposals"] = clean_proposals
+    dataframe = corpus.data
+    clean_proposals = dataframe["body"].apply(lambda x: preprocess_pipe_proposal(x))
+    dataframe["preprocessed_proposals"] = clean_proposals
 
     json_object = dataframe.to_json(orient="index")
     parsed_object = json.loads(json_object)
     with open(os.path.join(PREPROCESSING_FILE_PATH, "../dist/preprocessed_data.json"), "w", encoding="utf-8") as file:
         json.dump(parsed_object, file, ensure_ascii=False, indent=4)
     return dataframe
-
-
-def init_txt_file_from_table(file_path, proposal_column_name="body"):
-    """
-    Write a text file containing only the preprocessed proposals.
-    It is created from the dataframe structure initialized by the function
-    get_clean_proposals().
-    :param file_path: path to the data to preprocess -> csv or xls data
-    :type file_path: str
-    :param proposal_column_name: name of the column storing the proposals
-    :type proposal_column_name: str
-    """
-    file_exists, preprocessed_file_path, filename = check_preprocessed_file_exists(file_path)
-    if file_exists:
-        dataframe = pd.read_json(preprocessed_file_path, orient="index")
-    else:
-        dataframe = get_clean_proposals(file_path, proposal_column_name)
-    body = dataframe["preprocessed_proposals"].to_list()
-    with open(os.path.join(PREPROCESSING_FILE_PATH, "../dist/{}_preprocessed.txt".format(filename)),
-              "w", encoding="utf-8") as file:
-        for prop in body:
-            file.writelines(prop+'\n')
