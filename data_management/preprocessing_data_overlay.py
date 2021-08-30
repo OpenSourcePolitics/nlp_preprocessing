@@ -4,8 +4,8 @@ will act as an overlay between the script and the input data
 """
 import os
 import json
-import pandas as pd
 from dataclasses import dataclass
+import pandas as pd
 
 
 class NlpPreprocessingDataLoader:
@@ -18,11 +18,14 @@ class NlpPreprocessingDataLoader:
         method used to load data before it is passed to the processing
         functions
         """
-        pass
 
 
 @dataclass
 class InputCorpus:
+    """
+    Data structure used to store both the name of the corpus
+    and the data as a dataframe
+    """
     filename: str
     data: pd.DataFrame
 
@@ -51,11 +54,11 @@ class LocalPreprocessingDataLoader(NlpPreprocessingDataLoader):
             return self.load_csv()
         elif extension == "xls":
             return self.load_xls()
-    
+
     def load_json(self) -> InputCorpus:
         with open(self._file_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
-        return InputCorpus(filename=self._filename, data=pd.read_json(data))
+        return InputCorpus(filename=self._filename, data=pd.DataFrame.from_dict(data, orient='index'))
 
     def load_csv(self) -> InputCorpus:
         return InputCorpus(filename=self._filename, data=pd.read_csv(self._file_path, sep=",", encoding="utf-8"))
