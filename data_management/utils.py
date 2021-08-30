@@ -9,20 +9,6 @@ from data_management.preprocessing_data_overlay import InputCorpus
 UTILS_PATH = os.path.split(os.path.realpath(__file__))[0]
 
 
-def check_preprocessed_file_exists(file_path):
-    """
-    This function aims to save computation time if the data already exist
-    :param file_path: path to the data
-    :type file_path: str
-    :return: boolean if file exist, path to said file and filename
-    :rtype: tuple
-    """
-    filename, _ = os.path.splitext(os.path.split(file_path)[1])
-    preprocessed_file_path = os.path.join(UTILS_PATH+'/..', "dist/preprocessed_data.json")
-    file_exists = os.path.isfile(preprocessed_file_path)
-    return file_exists, preprocessed_file_path, filename
-
-
 def check_category_exists(dataframe):
     """
     This function will check if a column "category" exists in the initial dataframe.

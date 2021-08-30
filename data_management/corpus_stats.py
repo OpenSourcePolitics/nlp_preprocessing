@@ -1,7 +1,6 @@
 """
 This file will be used to compute statistical indicators on text data
 """
-import collections
 import os
 from collections import defaultdict
 import json
