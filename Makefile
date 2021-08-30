@@ -20,7 +20,7 @@ push:
 	docker push $(TAG)
 
 test:
-	pytest tests --cov=. --cov-fail-under=90 --cov-report term-missing
+	pytest tests --cov=. --cov-fail-under=85 --cov-report term-missing
 
 lint:
 	pylint ./**/*.py
