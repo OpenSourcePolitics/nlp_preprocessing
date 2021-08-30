@@ -5,15 +5,15 @@ import os
 import pytest
 from data_management.utils import clean_dist_directory
 from data_management.preprocessing import get_french_stop_words, f_stopwords, f_base, \
-    get_clean_proposals, init_txt_file_from_table, preprocess_pipe_proposal
+    get_clean_proposals, preprocess_pipe_proposal
+from data_management.preprocessing_data_overlay import LocalPreprocessingDataLoader
 
-from data_management.utils import check_preprocessed_file_exists
 
 TEST_PATH_PREPROCESSING = os.path.split(os.path.realpath(__file__))[0]
-VAR_1 = [(os.path.join(TEST_PATH_PREPROCESSING + "/..", "data/subset_FEAMP.xls"), None),
-         (os.path.join(TEST_PATH_PREPROCESSING + "/..", "data/subset_FEAMP.xls"), "clean_directory"),
-         (os.path.join(TEST_PATH_PREPROCESSING + "/..", "data/subset_raw_data.csv"), None),
-         (os.path.join(TEST_PATH_PREPROCESSING + "/..", "data/subset_raw_data.csv"), "clean_directory")]
+VAR_1 = [(os.path.join(os.path.dirname(TEST_PATH_PREPROCESSING), "data/subset_FEAMP.xls"), None),
+         (os.path.join(os.path.dirname(TEST_PATH_PREPROCESSING), "data/subset_FEAMP.xls"), "clean_directory"),
+         (os.path.join(os.path.dirname(TEST_PATH_PREPROCESSING), "data/subset_raw_data.csv"), None),
+         (os.path.join(os.path.dirname(TEST_PATH_PREPROCESSING), "data/subset_raw_data.csv"), "clean_directory")]
 
 
 def check_is_letters(sentence):
@@ -99,24 +99,11 @@ def test_preprocessing(file_path, flag_clean_directory):
     """
     if flag_clean_directory is not None:
         clean_dist_directory(os.path.join(TEST_PATH_PREPROCESSING, "../dist/*"))
-    dataframe = get_clean_proposals(file_path)
-    preprocessed_sentences = dataframe["preprocessed_proposals"].to_list()
-    assert "preprocessed_proposals" in list(dataframe.columns) \
+    corpus = LocalPreprocessingDataLoader(file_path).load()
+    preprocessed_dataframe = get_clean_proposals(corpus)
+    preprocessed_sentences = preprocessed_dataframe["preprocessed_proposals"].to_list()
+    assert "preprocessed_proposals" in list(preprocessed_dataframe.columns) \
            and len(preprocessed_sentences) != 0
-
-
-@pytest.mark.parametrize("file_path, flag_clean_directory", VAR_1)
-def test_txt_creation(file_path, flag_clean_directory):
-    """
-    This function is used to assert that there is a .txt file created by the function
-    init_txt_file_from_table
-    :param file_path: path to the test data -> test for .xls and .csv configurations
-    """
-    if flag_clean_directory is not None:
-        clean_dist_directory(os.path.join(TEST_PATH_PREPROCESSING, "../dist/*"))
-    init_txt_file_from_table(file_path)
-    _, _, filename = check_preprocessed_file_exists(file_path)
-    assert os.path.isfile(TEST_PATH_PREPROCESSING + "/../dist/{}_preprocessed.txt".format(filename))
 
 
 def test_preprocessing_pipe():
