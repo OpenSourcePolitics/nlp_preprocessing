@@ -2,7 +2,6 @@
 File to be run
 """
 import os
-import json
 import argparse
 from data_management.utils import merge_json_objects, clean_dist_directory
 from data_management.preprocessing import get_clean_proposals
