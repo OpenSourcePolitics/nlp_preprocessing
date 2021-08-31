@@ -42,7 +42,7 @@ def check_data(func):
     def wrapped(*args, **kwargs):
         data = request.get_json()
         if data is None:
-            return jsonify({'message': 'Invalid data'}), 403
+            return jsonify({'message': 'Invalid data'}), 400
         return func(*args, **kwargs)
     return wrapped
 
@@ -57,21 +57,26 @@ def execute_preprocessing():
     :return: Send the contents of a file to the client. see send_file documentation
     for further information
     """
-    filename = request.args['filename']
-    data = request.get_json()
     try:
+        if 'filename' in request.args:
+            filename = request.args['filename']
+        else:
+            return jsonify({'message': 'No filename specified in request'}), 400
+
+        data = request.get_json()
         get_nlp_preprocessing_from_api(post_request_data=data, filename=filename)
+        return jsonify(
+            load_preprocessed_data()
+        )
+
     except Exception as execution_error:
         print(type(execution_error))
         print(execution_error.args)
         traceback.print_exc(file=sys.stdout)
         print(execution_error)
         return jsonify(
-            {'message': 'Error executing script'}
-        ), 403
-    response = load_preprocessed_data()
-    return jsonify(response)
-
+            {'message': 'An internal server error occured'}
+        ), 500
 
 if __name__ == "__main__":
     app.run()
