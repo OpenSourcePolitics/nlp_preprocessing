@@ -22,7 +22,7 @@ def required_params_are_present(request_args):
     if len(request_args) < 1:
         return False
     
-    if 'token' in request_args and 'id' in request_args:
+    if 'token' in request_args and 'preprocessing_id' in request_args:
         if request_args["token"] == "" or request_args["preprocessing_id"] == "":
             return False
         else:
