@@ -10,6 +10,9 @@ REGISTRY_ENDPOINT := rg.$(REGION).scw.cloud
 REGISTRY_NAMESPACE := osp-internal-tools
 REGISTRY_TAG := $(REGISTRY_ENDPOINT)/$(REGISTRY_NAMESPACE)/$(IMAGE_NAME):$(VERSION)
 
+start:
+	@make build
+	@make run
 
 local-installation:
 	python resources_installation.py
