@@ -13,12 +13,10 @@ from main import get_nlp_preprocessing_from_api
 API_PATH = os.path.split(os.path.realpath(__file__))[0]
 app = Flask(__name__)
 
-
 def load_preprocessed_data() -> dict:
     with open(os.path.join(API_PATH, "dist/nlp_preprocessing_output.json"), 'r', encoding='utf-8') as file:
         preprocessing_data = json.load(file)
     return preprocessing_data
-
 
 @app.teardown_request
 def empty_dist_directory(response):
@@ -31,7 +29,6 @@ def empty_dist_directory(response):
     clean_dist_directory(os.path.join(API_PATH, "dist/*"))
     return response
 
-
 def check_data(func):
     """
     decorator function used to check that the data is not null or invalid
@@ -42,7 +39,7 @@ def check_data(func):
     def wrapped(*args, **kwargs):
         data = request.get_json()
         if data is None:
-            return jsonify({'message': 'Invalid data'}), 403
+            return jsonify({'message': 'Invalid data'}), 400
         return func(*args, **kwargs)
     return wrapped
 
@@ -57,21 +54,25 @@ def execute_preprocessing():
     :return: Send the contents of a file to the client. see send_file documentation
     for further information
     """
-    filename = request.args['filename']
-    data = request.get_json()
     try:
-        get_nlp_preprocessing_from_api(post_request_data=data, filename=filename)
+        if 'filename' in request.args:
+            filename = request.args['filename']
+        else:
+            return jsonify({'message': 'No filename specified in request'}), 400
+
+        get_nlp_preprocessing_from_api(post_request_data=request.get_json(), filename=filename)
+        return jsonify(
+            load_preprocessed_data()
+        )
+
     except Exception as execution_error:
         print(type(execution_error))
         print(execution_error.args)
         traceback.print_exc(file=sys.stdout)
         print(execution_error)
         return jsonify(
-            {'message': 'Error executing script'}
-        ), 403
-    response = load_preprocessed_data()
-    return jsonify(response)
-
+            {'message': 'An internal server error occured'}
+        ), 500
 
 if __name__ == "__main__":
     app.run()

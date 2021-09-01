@@ -1,4 +1,6 @@
-FROM python:3.8 AS builder
+FROM python:3.8
+
+ENV PYTHONUNBUFFERED 1
 
 WORKDIR /nlp_preprocessing
 
@@ -6,24 +8,12 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-COPY ./main.py ./
-
-COPY ./resources_installation.py ./
-
-COPY ./stop_words.txt ./
+COPY . .
 
 RUN python resources_installation.py
 
-RUN mkdir ./dist
+EXPOSE 8080
 
-COPY ./data_management ./data_management
+ENV PORT 8080
 
-COPY ./data ./data
-
-RUN python ./main.py -f "/nlp_preprocessing/data/subset_raw_data.csv"
-
-FROM python:3.8
-
-WORKDIR /dist
-
-COPY --from=builder ./nlp_preprocessing/dist/* ./
+CMD flask run --host=0.0.0.0 -p $PORT

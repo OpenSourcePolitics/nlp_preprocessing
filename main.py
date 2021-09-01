@@ -57,7 +57,6 @@ def get_nlp_preprocessing_from_api(post_request_data, filename: str):
     init_preprocessed_data_tmp_files(corpus)
     merge_json_objects(corpus)
 
-
 if __name__ == '__main__':
     ARGS = parse_cli_arguments()
     get_nlp_preprocessing_from_file(ARGS.file_path)
