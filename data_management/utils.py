@@ -49,7 +49,7 @@ def merge_json_objects(corpus: InputCorpus):
               "r", encoding="utf-8") as wf_preprocessed_file:
         word_frequency_preprocessed = json.load(wf_preprocessed_file)
     merged_dict = {
-        corpus.filename: preprocessed_data,
+        "preprocessed_data": preprocessed_data,
         "word_frequency_preprocessed": word_frequency_preprocessed,
         "word_frequency": word_frequency_data
     }

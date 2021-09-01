@@ -26,7 +26,6 @@ class InputCorpus:
     Data structure used to store both the name of the corpus
     and the data as a dataframe
     """
-    filename: str
     data: pd.DataFrame
 
 
@@ -38,7 +37,6 @@ class LocalPreprocessingDataLoader(NlpPreprocessingDataLoader):
 
     def __init__(self, file_path):
         self._file_path = file_path
-        self._filename = os.path.basename(os.path.normpath(os.path.splitext(file_path)[0]))
 
     def load(self) -> InputCorpus:
         """
@@ -58,13 +56,13 @@ class LocalPreprocessingDataLoader(NlpPreprocessingDataLoader):
     def load_json(self) -> InputCorpus:
         with open(self._file_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
-        return InputCorpus(filename=self._filename, data=pd.DataFrame.from_dict(data, orient='index'))
+        return InputCorpus(data=pd.DataFrame.from_dict(data, orient='index'))
 
     def load_csv(self) -> InputCorpus:
-        return InputCorpus(filename=self._filename, data=pd.read_csv(self._file_path, sep=",", encoding="utf-8"))
+        return InputCorpus(data=pd.read_csv(self._file_path, sep=",", encoding="utf-8"))
 
     def load_xls(self) -> InputCorpus:
-        return InputCorpus(filename=self._filename, data=pd.read_excel(self._file_path))
+        return InputCorpus(data=pd.read_excel(self._file_path))
 
 
 class ApiPreprocessingDataLoader(NlpPreprocessingDataLoader):
@@ -73,9 +71,8 @@ class ApiPreprocessingDataLoader(NlpPreprocessingDataLoader):
     with the data that send by a post request to the API
     """
 
-    def __init__(self, post_request_data, filename):
+    def __init__(self, post_request_data):
         self._post_request_data = post_request_data
-        self._filename = filename
 
     def load(self):
         """
@@ -84,5 +81,4 @@ class ApiPreprocessingDataLoader(NlpPreprocessingDataLoader):
         word frequencies and the classical one
         """
         post_request_data = pd.DataFrame.from_dict(self._post_request_data, orient='index')
-        return InputCorpus(filename=self._filename,
-                           data=post_request_data)
+        return InputCorpus(data=post_request_data)

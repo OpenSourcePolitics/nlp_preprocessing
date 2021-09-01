@@ -26,6 +26,5 @@ def test_api_workflow():
     API simulation
     """
     data = read_local_data()
-    filename = "subset_raw_data"
-    get_nlp_preprocessing_from_api(post_request_data=data, filename=filename)
+    get_nlp_preprocessing_from_api(post_request_data=data)
     assert os.path.isfile(os.path.join(os.path.dirname(TEST_DATA_INTERFACE_PATH), "dist/nlp_preprocessing_output.json"))
