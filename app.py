@@ -14,7 +14,6 @@ from main import get_nlp_preprocessing_from_api
 
 
 API_PATH = os.path.split(os.path.realpath(__file__))[0]
-RAILS_APP_ENDPOINT = "http://localhost:5000/tests/endpoint"
 
 load_dotenv()
 app = Flask(__name__)
@@ -24,7 +23,7 @@ def required_params_are_present(request_args):
         return False
     
     if 'token' in request_args and 'id' in request_args:
-        if request_args["token"] == "" or request_args["id"] == "":
+        if request_args["token"] == "" or request_args["preprocessing_id"] == "":
             return False
         else:
             return True
@@ -82,7 +81,7 @@ def execute_preprocessing():
         if required_params_are_present(request.args):
             params = {
                 "token": request.args['token'],
-                "id": request.args['id']
+                "preprocessing_id": request.args['preprocessing_id']
             }
         else:
             return jsonify({'message': 'Required params are missing or invalid'}), 400
