@@ -8,10 +8,15 @@ import traceback
 from functools import wraps
 from flask import Flask, jsonify, request
 from data_management.utils import clean_dist_directory
-from main import get_nlp_preprocessing_from_api, load_preprocessed_data
+from main import get_nlp_preprocessing_from_api
 
 API_PATH = os.path.split(os.path.realpath(__file__))[0]
 app = Flask(__name__)
+
+def load_preprocessed_data() -> dict:
+    with open(os.path.join(API_PATH, "dist/nlp_preprocessing_output.json"), 'r', encoding='utf-8') as file:
+        preprocessing_data = json.load(file)
+    return preprocessing_data
 
 @app.teardown_request
 def empty_dist_directory(response):
