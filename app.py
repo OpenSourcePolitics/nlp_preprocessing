@@ -89,10 +89,10 @@ def execute_preprocessing():
 
         get_nlp_preprocessing_from_api(post_request_data=request.get_json())
 
-        data = json.dumps(load_preprocessed_data())
-        requests.post(os.environ.get('RAILS_APP_ENDPOINT'), params=params, json=data)
+        preprocessed_data = load_preprocessed_data()
+        requests.post(os.environ.get('RAILS_APP_ENDPOINT'), params=params, json=json.dumps(preprocessed_data))
 
-        return data
+        return jsonify(preprocessed_data)
 
     except Exception as execution_error:
         print(type(execution_error))
