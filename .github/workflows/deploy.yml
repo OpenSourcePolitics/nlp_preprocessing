@@ -15,7 +15,7 @@ jobs:
       - name: Build & Push Image
         run: |
           docker login ${{ secrets.REGISTRY_ENDPOINT }} -u userdoesnotmatter -p ${{ secrets.TOKEN }}
-          docker build . --compress --tag ${{ secrets.TAG }}
+          docker build . --compress --tag ${{ secrets.REGISTRY_TAG }}
           docker push ${{ secrets.TAG }}
       - name: Deploy container
         run: |
