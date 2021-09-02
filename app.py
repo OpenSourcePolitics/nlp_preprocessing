@@ -5,26 +5,44 @@ import os
 import sys
 import json
 import traceback
+import requests
+from dotenv import load_dotenv
 from functools import wraps
 from flask import Flask, jsonify, request
 from data_management.utils import clean_dist_directory
 from main import get_nlp_preprocessing_from_api
 
+
 API_PATH = os.path.split(os.path.realpath(__file__))[0]
+
+load_dotenv()
 app = Flask(__name__)
 
+def required_params_are_present(request_args):
+    if len(request_args) < 1:
+        return False
+    
+    if 'token' in request_args and 'preprocessing_id' in request_args:
+        if request_args["token"] == "" or request_args["preprocessing_id"] == "":
+            return False
+        else:
+            return True
+    else:
+        return False
 
 def load_preprocessed_data() -> dict:
     with open(os.path.join(API_PATH, "dist/nlp_preprocessing_output.json"), 'r', encoding='utf-8') as file:
         preprocessing_data = json.load(file)
     return preprocessing_data
 
-
 @app.teardown_request
-def empty_dist_directory(response):
+def once_request_finished(response):
     """
     Function that will be called after the request
     to clean the dist directory
+    Furthermore, it makes HTTP POST request to the interface endpoint
+    :param token: Request token given as query string
+    :param id: Request id given as query string
     :param response:
     :return:
     """
@@ -60,10 +78,20 @@ def execute_preprocessing():
     for further information
     """
     try:
+        if required_params_are_present(request.args):
+            params = {
+                "token": request.args['token'],
+                "preprocessing_id": request.args['preprocessing_id']
+            }
+        else:
+            return jsonify({'message': 'Required params are missing or invalid'}), 400
+
         get_nlp_preprocessing_from_api(post_request_data=request.get_json())
-        return jsonify(
-            load_preprocessed_data()
-        )
+
+        preprocessed_data = load_preprocessed_data()
+        requests.post(os.environ.get('RAILS_APP_ENDPOINT'), params=params, json=json.dumps(preprocessed_data))
+
+        return jsonify(preprocessed_data)
 
     except Exception as execution_error:
         print(type(execution_error))

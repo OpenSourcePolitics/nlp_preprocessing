@@ -130,3 +130,6 @@ dmypy.json
 dist/*.csv
 dist/*.json
 dist/*.txt
+bin/
+pyvenv.cfg
+.env
