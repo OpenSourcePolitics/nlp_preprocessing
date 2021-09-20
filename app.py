@@ -11,11 +11,20 @@ from functools import wraps
 from flask import Flask, jsonify, request
 from data_management.utils import clean_dist_directory
 from main import get_nlp_preprocessing_from_api
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 
 
 API_PATH = os.path.split(os.path.realpath(__file__))[0]
 
 load_dotenv()
+
+sentry_sdk.init(
+    dsn=os.environ.get('SENTRY_DSN'),
+    integrations=[FlaskIntegration()],
+    traces_sample_rate=1.0
+)
+
 app = Flask(__name__)
 
 def required_params_are_present(request_args):
