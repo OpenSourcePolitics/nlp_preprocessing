@@ -1,0 +1,29 @@
+{
+  "title": "Data structure to be preprocessed",
+  "description": "A document stores two Decidim output files that need to be mapped : proposals and comments",
+  "type": "object",
+  "patternProperties": {
+    "\\d+": {
+      "type": "object",
+      "patternProperties": {
+        "^(id)$": {
+          "description": "Proposal identifier",
+          "type": "integer"
+        },
+        "^(title|title/fr)$": {
+          "description": "Proposal title",
+          "type": "string"
+        },
+        "^(body|body/fr)$": {
+          "description": "Proposal content",
+          "type": "string"
+        },
+        "^(category/name/fr|category)$": {
+          "description": "Decidim built in categories defined with the client",
+          "type": "string"
+        }
+      },
+      "minProperties": 4
+    }
+  }
+}
