@@ -21,14 +21,14 @@ def get_french_stop_words():
     :return: set of words
     :rtype: set
     """
-    with open(os.path.join(PREPROCESSING_FILE_PATH+'/..',
+    with open(os.path.join(PREPROCESSING_FILE_PATH + '/..',
                            "stop_words.txt"), "r", encoding="utf-8") as file:
         custom_stop_words = file.readlines()
     clean_words = []
     for word in custom_stop_words:
         clean_words.append(re.sub('\n', '', word))
     stop_words = nltk.corpus.stopwords.words("french")
-    return set(stop_words+clean_words)
+    return set(stop_words + clean_words + ["re", "ré", "er"])
 
 
 def f_base(string):
@@ -38,9 +38,9 @@ def f_base(string):
     :param string: string to be processed
     :return: processed string - see comments in the source code for more info
     """
-    string = string.lower()
     string = re.sub(r'[0-9]+|%|[+*\\/_#$]+', '', string)
-    string = re.sub(r'[}{\]\[()= ><?.;,!":»«]+', ' ', string)
+    string = re.sub(r'[}{\]\[= ><?.;,!":»«]+', ' ', string)
+    string = re.sub(r'[()]+', '', string)
     string = re.sub(r'[\-\'’`]+', ' ', string)
     string = re.sub(r' [a-z] | qu ', ' ', string)
     string = re.sub(r' {2}', " ", string)

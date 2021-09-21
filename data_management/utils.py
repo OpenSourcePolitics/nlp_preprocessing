@@ -55,3 +55,13 @@ def merge_json_objects(corpus: InputCorpus):
     }
     with open(os.path.join(UTILS_PATH, "../dist/nlp_preprocessing_output.json"), "w", encoding="utf-8") as file:
         json.dump(merged_dict, file, ensure_ascii=False, indent=4)
+
+
+def get_stanza_resources_root() -> str:
+    """
+    Get the root path where stanza resources are stored
+    :return: root
+    """
+    for root, dirs, _ in os.walk("/"):
+        if "stanza_resources" in dirs:
+            return root
