@@ -21,26 +21,30 @@ def get_french_stop_words():
     :return: set of words
     :rtype: set
     """
-    with open(os.path.join(PREPROCESSING_FILE_PATH+'/..',
+    with open(os.path.join(PREPROCESSING_FILE_PATH + '/..',
                            "stop_words.txt"), "r", encoding="utf-8") as file:
         custom_stop_words = file.readlines()
     clean_words = []
     for word in custom_stop_words:
         clean_words.append(re.sub('\n', '', word))
     stop_words = nltk.corpus.stopwords.words("french")
-    return set(stop_words+clean_words)
+    return set(stop_words + clean_words + ["re", "ré", "er"])
 
 
 def f_base(string):
     """
     Basic preprocessing : lowercase, suppression of special characters, remove
     remaining letters, suppression of numbers
+    warning on url removal : the regex pattern will match all string until it hits a space or  [^\r\n\t\f\v]
+    For instance http://example.org/?testfoo=585442/.hithere will be entirely selected while
+    http://example.org/?testfoo=585442/. hithere will not integrate "hithere"
     :param string: string to be processed
     :return: processed string - see comments in the source code for more info
     """
-    string = string.lower()
+    string = re.sub(r'http\S+', '', string)
     string = re.sub(r'[0-9]+|%|[+*\\/_#$]+', '', string)
-    string = re.sub(r'[}{\]\[()= ><?.;,!":»«]+', ' ', string)
+    string = re.sub(r'[}{\]\[= ><?.;,!":»«]+', ' ', string)
+    string = re.sub(r'[()]+', '', string)
     string = re.sub(r'[\-\'’`]+', ' ', string)
     string = re.sub(r' [a-z] | qu ', ' ', string)
     string = re.sub(r' {2}', " ", string)
