@@ -35,9 +35,13 @@ def f_base(string):
     """
     Basic preprocessing : lowercase, suppression of special characters, remove
     remaining letters, suppression of numbers
+    warning on url removal : the regex pattern will match all string until it hits a space or  [^\r\n\t\f\v]
+    For instance http://example.org/?testfoo=585442/.hithere will be entirely selected while
+    http://example.org/?testfoo=585442/. hithere will not integrate "hithere"
     :param string: string to be processed
     :return: processed string - see comments in the source code for more info
     """
+    string = re.sub(r'http\S+', '', string)
     string = re.sub(r'[0-9]+|%|[+*\\/_#$]+', '', string)
     string = re.sub(r'[}{\]\[= ><?.;,!":»«]+', ' ', string)
     string = re.sub(r'[()]+', '', string)
