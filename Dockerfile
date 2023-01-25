@@ -16,4 +16,4 @@ EXPOSE 8080
 
 ENV PORT 8080
 
-CMD flask run --host=0.0.0.0 -p $PORT
+CMD gunicorn --bind 0.0.0.0:$PORT --access-logfile - --error-logfile - --log-level debug wsgi:app
