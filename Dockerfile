@@ -7,12 +7,12 @@ FLASK_ENV=production
 WORKDIR /nlp_preprocessing
 
 COPY requirements.txt .
-
 RUN pip install -r requirements.txt
 
-COPY . .
-
+COPY resources_installation.py .
 RUN python resources_installation.py
+
+COPY . .
 
 EXPOSE 8080
 

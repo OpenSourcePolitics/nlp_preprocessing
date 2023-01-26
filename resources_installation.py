@@ -4,5 +4,5 @@ This file aims to address the downloading of all resources required by stanza an
 import stanza
 import nltk
 
-stanza.download("fr")
-nltk.download("stopwords")
+stanza.download("fr", "./cache/stanza_resources")
+nltk.download("stopwords", "./cache/nltk_resources")
