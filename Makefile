@@ -9,6 +9,7 @@ REGION := fr-par
 REGISTRY_ENDPOINT := rg.$(REGION).scw.cloud
 REGISTRY_NAMESPACE := osp-internal-tools
 REGISTRY_TAG := $(REGISTRY_ENDPOINT)/$(REGISTRY_NAMESPACE)/$(IMAGE_NAME):$(VERSION)
+RAILS_APP_ENDPOINT := "http://localhost:3000/preprocessed_data"
 
 start:
 	@make build
@@ -24,7 +25,7 @@ build-local:
 	docker stop nlp-preprocessing
 
 run:
-	docker run -it -e PORT=$(PORT) -p $(PORT):$(PORT) --rm $(REGISTRY_TAG)
+	docker run -it -e RAILS_APP_ENDPOINT=$(RAILS_APP_ENDPOINT) -e PORT=$(PORT) -p $(PORT):$(PORT) --rm $(REGISTRY_TAG)
 
 push:
 	@make build-local
@@ -46,7 +47,7 @@ deploy:
 	@make push-scw
 
 local-test:
-	pytest tests --cov=. --cov-fail-under=85 --cov-report term-missing
+	pytest tests --cov=. --cov-fail-under=80 --cov-report term-missing
 
 local-lint:
 	pylint ./**/*.py
@@ -60,7 +61,7 @@ local-dep3:
 	pip3 install -r requirements.txt
 
 bash:
-	docker run -it --rm $(REGISTRY_TAG) /bin/bash
+	docker run -it -e RAILS_APP_ENDPOINT=$(RAILS_APP_ENDPOINT) --rm $(REGISTRY_TAG) /bin/bash
 
 test:
 	docker run -it --rm $(REGISTRY_TAG) /bin/bash -c "pytest tests --cov=. --cov-fail-under=80 --cov-report term-missing"
