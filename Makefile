@@ -45,17 +45,17 @@ deploy:
 	@make build
 	@make push-scw
 
-test:
+local-test:
 	pytest tests --cov=. --cov-fail-under=85 --cov-report term-missing
 
-lint:
+local-lint:
 	pylint ./**/*.py
 
-dep:
+local-dep:
 	pip install pylint
 	pip install -r requirements.txt
 
-dep3:
+local-dep3:
 	pip3 install pylint
 	pip3 install -r requirements.txt
 
