@@ -49,7 +49,7 @@ class LocalPreprocessingDataLoader(NlpPreprocessingDataLoader):
             return self.load_json()
         elif extension == "csv":
             return self.load_csv()
-        elif extension == "xlsx":
+        elif extension == "xls":
             return self.load_xls()
         else:
             raise ValueError("File extension not supported")
