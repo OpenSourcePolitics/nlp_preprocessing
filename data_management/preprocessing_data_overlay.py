@@ -2,7 +2,6 @@
 This file is used to define an Interface that
 will act as an overlay between the script and the input data
 """
-import os
 import json
 from dataclasses import dataclass
 import pandas as pd
@@ -50,18 +49,29 @@ class LocalPreprocessingDataLoader(NlpPreprocessingDataLoader):
             return self.load_json()
         elif extension == "csv":
             return self.load_csv()
-        elif extension == "xls":
+        elif extension == "xlsx":
             return self.load_xls()
+        else:
+            raise ValueError("File extension not supported")
 
     def load_json(self) -> InputCorpus:
+        """
+        loads the data from a json file
+        """
         with open(self._file_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
         return InputCorpus(data=pd.DataFrame.from_dict(data, orient='index'))
 
     def load_csv(self) -> InputCorpus:
+        """
+        loads the data from a csv file
+        """
         return InputCorpus(data=pd.read_csv(self._file_path, sep=",", encoding="utf-8"))
 
     def load_xls(self) -> InputCorpus:
+        """
+        loads the data from a xls file
+        """
         return InputCorpus(data=pd.read_excel(self._file_path))
 
 

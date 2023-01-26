@@ -4,7 +4,6 @@ Tool function used across the module
 import os
 import json
 import glob
-from data_management.preprocessing_data_overlay import InputCorpus
 
 UTILS_PATH = os.path.split(os.path.realpath(__file__))[0]
 
@@ -34,7 +33,7 @@ def clean_dist_directory(repository_path):
         os.remove(file)
 
 
-def merge_json_objects(corpus: InputCorpus):
+def merge_json_objects():
     """
     This function will be used to merge the temporary json outputs (word frequency, preprocessed
     data etc.) and aggregate them into a single json object.

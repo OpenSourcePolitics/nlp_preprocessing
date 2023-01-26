@@ -67,5 +67,3 @@ test:
 
 lint:
 	docker run -it --rm $(REGISTRY_TAG) /bin/bash -c "pip install pylint && pylint ./**/*.py"
-
-

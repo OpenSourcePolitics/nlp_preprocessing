@@ -45,7 +45,7 @@ def voc_unique_by_category(dataframe: pandas.DataFrame, is_preprocessed=True):
     output format -> dictionary (freq), dictionary (stats), dictionary (corpus)
     """
     corpora = freq_stats_corpora(dataframe, is_preprocessed)
-    word_frequency_by_category = dict()
+    word_frequency_by_category = {}
     for keys, values in corpora.items():
         word_frequency_by_category[keys] = dict(nltk.FreqDist(values))
     if is_preprocessed:
