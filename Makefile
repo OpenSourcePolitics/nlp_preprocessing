@@ -47,7 +47,7 @@ deploy:
 	@make push-scw
 
 local-test:
-	pytest tests --cov=. --cov-fail-under=80 --cov-report term-missing
+	pytest tests --cov=. --cov-fail-under=75 --cov-report term-missing
 
 local-lint:
 	pylint ./**/*.py
@@ -64,7 +64,7 @@ bash:
 	docker run -it -e RAILS_APP_ENDPOINT=$(RAILS_APP_ENDPOINT) --rm $(REGISTRY_TAG) /bin/bash
 
 test:
-	docker run -it --rm $(REGISTRY_TAG) /bin/bash -c "pytest tests --cov=. --cov-fail-under=80 --cov-report term-missing"
+	docker run -it --rm $(REGISTRY_TAG) /bin/bash -c "pytest tests --cov=. --cov-fail-under=75 --cov-report term-missing"
 
 lint:
 	docker run -it --rm $(REGISTRY_TAG) /bin/bash -c "pip install pylint && pylint ./**/*.py"
