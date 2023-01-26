@@ -1,6 +1,8 @@
 FROM python:3.8
 
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=1 \
+PORT=8080 \
+FLASK_ENV=production
 
 WORKDIR /nlp_preprocessing
 
