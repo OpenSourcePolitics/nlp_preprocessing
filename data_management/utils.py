@@ -4,6 +4,7 @@ Tool function used across the module
 import os
 import json
 import glob
+
 from data_management.preprocessing_data_overlay import InputCorpus
 
 UTILS_PATH = os.path.split(os.path.realpath(__file__))[0]

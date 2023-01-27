@@ -1,6 +1,9 @@
 FROM python:3.8
 
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=1 \
+PORT=8080 \
+FLASK_ENV=production \
+TIMEOUT=600
 
 WORKDIR /nlp_preprocessing
 
@@ -14,6 +17,4 @@ COPY . .
 
 EXPOSE 8080
 
-ENV PORT 8080
-
-CMD flask run --host=0.0.0.0 -p $PORT
+CMD gunicorn --bind 0.0.0.0:$PORT --access-logfile - --error-logfile - --log-level debug --timeout $TIMEOUT wsgi:app
