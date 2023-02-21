@@ -89,10 +89,5 @@ jobs:
           tags: ${{ vars.REGISTRY_ENDPOINT }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.IMAGE_NAME }}:${{ vars.VERSION }}
       - name: Deploy container
         run: |
-          CONTAINER_ID=$(sed -e 's/^"//' -e 's/"$//' <<<$(curl -X GET -H "X-Auth-Token: ${{ secrets.TOKEN}}" "https://api.scaleway.com/containers/v1beta1/regions/fr-par/containers/" | jq -e '.containers[] | select(.name|test("${{ vars.CONTAINER_NAME }}"))'.id))
-          curl \
-            -X POST \
-            -H "X-Auth-Token: ${{ secrets.TOKEN }}" \
-            -d "{}" \
-            "https://api.scaleway.com/containers/${{ vars.SCW_API_VERSION }}/regions/fr-par/containers/$CONTAINER_ID/deploy" \
-            | jq 'del(."environment_variables")'
+          python .github/deploy.py
+        
