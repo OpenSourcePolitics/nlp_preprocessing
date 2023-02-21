@@ -69,7 +69,8 @@ jobs:
           WITH_V: true
   deploy:
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-    needs: [ bump_version ]
+    # TODO: Remove this line when the workflows are fixed
+    #needs: [ bump_version ]
     runs-on: ubuntu-latest
     steps:
       - uses: rokroskar/workflow-run-cleanup-action@v0.2.2
@@ -84,18 +85,12 @@ jobs:
           registry: ${{ vars.REGISTRY_ENDPOINT }}
           username: userdoesnotmatter
           password: ${{ secrets.TOKEN }}
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-        with:
-          images: ${{ vars.REGISTRY_ENDPOINT }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.IMAGE_NAME }}:${{ vars.VERSION }}
       - name: Build image
         uses: docker/build-push-action@v3
         with:
           push: true
           pull: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ vars.REGISTRY_ENDPOINT }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.IMAGE_NAME }}:${{ vars.VERSION }}
       - name: Setup scw cli
         run: |
           export VERSION="2.5.4"
