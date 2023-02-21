@@ -62,8 +62,8 @@ jobs:
       - name: Build & Push Image
         run: |
           docker login ${{ vars.REGISTRY_ENDPOINT }} -u userdoesnotmatter -p ${{ secrets.TOKEN }}
-          docker build . --compress --tag ${{ vars.REGISTRY_ENDPOINT }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.IMAGE_NAME }}:${{ vars.TAG }}
-          docker push ${{ vars.REGISTRY_ENDPOINT }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.IMAGE_NAME }}:${{ vars.TAG }}
+          docker build . --compress --tag ${{ vars.REGISTRY_ENDPOINT }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.IMAGE_NAME }}:${{ vars.VERSION }}
+          docker push ${{ vars.REGISTRY_ENDPOINT }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.IMAGE_NAME }}:${{ vars.VERSION }}
       - name: Deploy container
         run: |
           CONTAINER_ID=$(sed -e 's/^"//' -e 's/"$//' <<<$(curl -X GET -H "X-Auth-Token: ${{ secrets.TOKEN}}" "https://api.scaleway.com/containers/v1beta1/regions/fr-par/containers/" | jq -e '.containers[] | select(.name|test("${{ vars.CONTAINER_NAME }}"))'.id))
