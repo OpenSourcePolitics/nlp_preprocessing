@@ -61,15 +61,15 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build & Push Image
         run: |
-          docker login ${{ env.REGISTRY_ENDPOINT }} -u userdoesnotmatter -p ${{ secrets.TOKEN }}
-          docker build . --compress --tag ${{ env.REGISTRY_ENDPOINT }}/${{ env.REGISTRY_NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}
-          docker push ${{ env.TAG }}
+          docker login ${{ vars.REGISTRY_ENDPOINT }} -u userdoesnotmatter -p ${{ secrets.TOKEN }}
+          docker build . --compress --tag ${{ vars.REGISTRY_ENDPOINT }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.IMAGE_NAME }}:${{ vars.TAG }}
+          docker push ${{ vars.REGISTRY_ENDPOINT }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.IMAGE_NAME }}:${{ vars.TAG }}
       - name: Deploy container
         run: |
-          CONTAINER_ID=$(sed -e 's/^"//' -e 's/"$//' <<<$(curl -X GET -H "X-Auth-Token: ${{ secrets.TOKEN}}" "https://api.scaleway.com/containers/v1beta1/regions/fr-par/containers/" | jq -e '.containers[] | select(.name|test("${{ env.CONTAINER_NAME }}"))'.id))
+          CONTAINER_ID=$(sed -e 's/^"//' -e 's/"$//' <<<$(curl -X GET -H "X-Auth-Token: ${{ secrets.TOKEN}}" "https://api.scaleway.com/containers/v1beta1/regions/fr-par/containers/" | jq -e '.containers[] | select(.name|test("${{ vars.CONTAINER_NAME }}"))'.id))
           curl \
             -X POST \
             -H "X-Auth-Token: ${{ secrets.TOKEN }}" \
             -d "{}" \
-            "https://api.scaleway.com/containers/${{ env.SCW_API_VERSION }}/regions/fr-par/containers/$CONTAINER_ID/deploy" \
+            "https://api.scaleway.com/containers/${{ vars.SCW_API_VERSION }}/regions/fr-par/containers/$CONTAINER_ID/deploy" \
             | jq 'del(."environment_variables")'
