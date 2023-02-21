@@ -84,12 +84,18 @@ jobs:
           registry: ${{ vars.REGISTRY_ENDPOINT }}
           username: userdoesnotmatter
           password: ${{ secrets.TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ vars.REGISTRY_ENDPOINT }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.IMAGE_NAME }}:${{ vars.VERSION }}
       - name: Build image
         uses: docker/build-push-action@v3
         with:
           push: true
           pull: true
-          tags: ${{ vars.REGISTRY_ENDPOINT }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.IMAGE_NAME }}:${{ vars.VERSION }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
       - name: Setup scw cli
         run: |
           export VERSION="2.5.4"
