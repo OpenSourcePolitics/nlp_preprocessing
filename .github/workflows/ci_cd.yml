@@ -87,6 +87,8 @@ jobs:
           push: true
           pull: true
           tags: ${{ vars.REGISTRY_ENDPOINT }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.IMAGE_NAME }}:${{ vars.VERSION }}
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
       - name: Deploy container
         run: |
           python .github/deploy.py
