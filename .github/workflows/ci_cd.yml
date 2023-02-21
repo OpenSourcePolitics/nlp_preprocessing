@@ -102,6 +102,6 @@ jobs:
         uses: lhotari/action-upterm@v1
       - name: Deploy container
         run: |
-          export CONTAINER_NAME= ${{ vars.CONTAINER_NAME }}
+          export CONTAINER_NAME=${{ vars.CONTAINER_NAME }}
           python .github/deploy.py
         
