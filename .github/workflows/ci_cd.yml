@@ -89,7 +89,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          cache-from: type=registry,ref=${{ vars.REGISTRY_ENDPOINT }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.IMAGE_NAME }}:cache
+          cache-from: type=registry,ref=${{ vars.REGISTRY_ENDPOINT }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.IMAGE_NAME }}:cache,mode=max
           cache-to: type=registry,ref=${{ vars.REGISTRY_ENDPOINT }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.IMAGE_NAME }}:cache,mode=max
           tags: ${{ vars.REGISTRY_ENDPOINT }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.IMAGE_NAME }}:${{ vars.VERSION }}
       - name: Setup scw cli
