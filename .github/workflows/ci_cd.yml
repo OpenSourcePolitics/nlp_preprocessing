@@ -18,7 +18,7 @@ jobs:
           cache: pip
       - name: Set Stanza version
         run: |
-          echo "STANZA_VERSION=$(cat requirements.txt | grep -E -i "^stanza" | grep -E '[0-9].*')" >> $GITHUB_ENV
+          echo "STANZA_VERSION=$(cat requirements.txt | grep -E -i "^stanza" >> $GITHUB_ENV
       - name: Cache Stanzas
         uses: actions/cache@v3
         with:
@@ -26,7 +26,7 @@ jobs:
           key: ${{ runner.os }}-stanza-resources-${{ env.STANZA_VERSION }}
       - name: Set NLTK version
         run: |
-          echo "NLTK_VERSION=$(cat requirements.txt | grep -E -i "^nltk" | grep -E '[0-9].*')" >> $GITHUB_ENV
+          echo "NLTK_VERSION=$(cat requirements.txt | grep -E -i "^nltk" >> $GITHUB_ENV
       - name: Cache nltk
         uses: actions/cache@v3
         with:
