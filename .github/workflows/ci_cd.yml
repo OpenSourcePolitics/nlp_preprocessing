@@ -70,8 +70,7 @@ jobs:
           WITH_V: true
   deploy:
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-    # TODO: Remove this line when the workflows are fixed
-    #needs: [ bump_version ]
+    needs: [ bump_version ]
     runs-on: ubuntu-latest
     steps:
       - uses: rokroskar/workflow-run-cleanup-action@v0.2.2
