@@ -7,7 +7,7 @@ TAG := $(USERNAME)/$(REPO_NAME):$(VERSION)
 PORT := 8080
 REGION := fr-par
 REGISTRY_ENDPOINT := rg.$(REGION).scw.cloud
-REGISTRY_NAMESPACE := osp-internal-tools
+REGISTRY_NAMESPACE := internal-tools
 REGISTRY_TAG := $(REGISTRY_ENDPOINT)/$(REGISTRY_NAMESPACE)/$(IMAGE_NAME):$(VERSION)
 RAILS_APP_ENDPOINT := "http://localhost:3000/preprocessed_data"
 
