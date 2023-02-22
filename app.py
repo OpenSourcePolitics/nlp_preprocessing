@@ -8,12 +8,11 @@ import traceback
 import requests
 from dotenv import load_dotenv
 from functools import wraps
-from flask import Flask, jsonify, request
 from data_management.utils import clean_dist_directory
 from main import get_nlp_preprocessing_from_api
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
-
+from flask import Flask, jsonify, request
 
 API_PATH = os.path.split(os.path.realpath(__file__))[0]
 
@@ -27,10 +26,11 @@ sentry_sdk.init(
 
 app = Flask(__name__)
 
+
 def required_params_are_present(request_args):
     if len(request_args) < 1:
         return False
-    
+
     if 'token' in request_args and 'preprocessing_id' in request_args:
         if request_args["token"] == "" or request_args["preprocessing_id"] == "":
             return False
@@ -39,10 +39,12 @@ def required_params_are_present(request_args):
     else:
         return False
 
+
 def load_preprocessed_data() -> dict:
     with open(os.path.join(API_PATH, "dist/nlp_preprocessing_output.json"), 'r', encoding='utf-8') as file:
         preprocessing_data = json.load(file)
     return preprocessing_data
+
 
 @app.teardown_request
 def once_request_finished(response):
@@ -74,6 +76,7 @@ def check_data(func):
         return func(*args, **kwargs)
 
     return wrapped
+
 
 @app.route('/ping', methods=['GET'])
 def ping():
