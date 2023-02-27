@@ -10,6 +10,19 @@ from data_management.preprocessing_data_overlay import InputCorpus
 UTILS_PATH = os.path.split(os.path.realpath(__file__))[0]
 
 
+def clean_keys(data):
+    """
+    This function will clean the keys of the post request data
+    :param data: dictionary containing the data from the post request
+    :return: dictionary containing the cleaned data from the post request
+    """
+    new_dict = {}
+    for key, value in data.items():
+        new_key = key.replace("/fr", "")
+        new_dict[new_key] = clean_keys(value) if isinstance(value, dict) else value
+    return new_dict
+
+
 def check_category_exists(dataframe):
     """
     This function will check if a column "category" exists in the initial dataframe.
