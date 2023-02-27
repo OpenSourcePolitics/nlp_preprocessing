@@ -3,7 +3,9 @@ File to be run
 """
 import os
 import argparse
-from data_management.utils import merge_json_objects, clean_dist_directory
+import pdb
+
+from data_management.utils import merge_json_objects, clean_dist_directory, clean_keys
 from data_management.preprocessing import get_clean_proposals
 from data_management.corpus_stats import voc_unique_by_category
 from data_management.preprocessing_data_overlay import LocalPreprocessingDataLoader, \
@@ -53,6 +55,7 @@ def get_nlp_preprocessing_from_file(file_path: str):
 
 
 def get_nlp_preprocessing_from_api(post_request_data):
+    post_request_data = clean_keys(post_request_data)
     corpus = ApiPreprocessingDataLoader(post_request_data=post_request_data).load()
     init_preprocessed_data_tmp_files(corpus)
     merge_json_objects(corpus)
