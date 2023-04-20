@@ -4,7 +4,6 @@ on: push
 
 env:
   PYTHON_VERSION: 3.8
-  SCW_CLI_VERSION: 2.5.4
 
 jobs:
   tests:
@@ -76,28 +75,12 @@ jobs:
       - uses: rokroskar/workflow-run-cleanup-action@v0.2.2
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-      - uses: actions/checkout@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Login to Scaleway registry
-        uses: docker/login-action@v2
+      - uses: OpenSourcePolitics/deploy-container-action@master
         with:
           registry: ${{ vars.REGISTRY_ENDPOINT }}
-          username: userdoesnotmatter
+          namespace: ${{ vars.REGISTRY_NAMESPACE }}
           password: ${{ secrets.TOKEN }}
-      - name: Build image
-        uses: docker/build-push-action@v3
-        with:
-          push: true
-          cache-from: type=registry,ref=${{ vars.REGISTRY_ENDPOINT }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.IMAGE_NAME }}:cache
-          cache-to: type=registry,ref=${{ vars.REGISTRY_ENDPOINT }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.IMAGE_NAME }}:cache
-          tags: ${{ vars.REGISTRY_ENDPOINT }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.IMAGE_NAME }}:${{ vars.VERSION }}
-      - name: Setup scw cli
-        run: |
-          sudo curl -o /usr/local/bin/scw -L "https://github.com/scaleway/scaleway-cli/releases/download/v${{ env.SCW_CLI_VERSION }}/scaleway-cli_${{ env.SCW_CLI_VERSION }}_linux_amd64"
-          sudo chmod +x /usr/local/bin/scw
-          scw init secret-key=${{ secrets.TOKEN }} access-key=${{ secrets.ACCESS_TOKEN }} install-autocomplete=false send-telemetry=false with-ssh-key=false
-      - name: Deploy container
-        run: |
-          CONTAINER_NAME=${{ vars.CONTAINER_NAME }} python .github/deploy.py
-        
+          image_name: ${{ vars.IMAGE_NAME }}
+          tag: ${{ vars.VERSION }}
+          access_key: ${{ secrets.ACCESS_TOKEN }}
+          container_name: ${{ vars.CONTAINER_NAME }}
