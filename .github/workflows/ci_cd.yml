@@ -84,3 +84,4 @@ jobs:
           tag: ${{ vars.VERSION }}
           access_key: ${{ secrets.ACCESS_TOKEN }}
           container_name: ${{ vars.CONTAINER_NAME }}
+          project_id: ${{ secrets.SCW_PROJECT_ID }}
